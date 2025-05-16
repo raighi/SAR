@@ -78,3 +78,62 @@ soundsc(y, fe);
 
 
 
+
+%Question 3.7 effet_reverb_FFT
+
+
+%ENTREE : x=signal
+%         h=la reponse impulsionnelle estimée
+%SORTIE : x_conv=le signal convolué
+%%
+function[y]=effet_reverb_FFT(x,h)
+nfft=length(x)+length(h)-1;
+x_fft= fft(x,nfft);
+h_fft=fft(h,nfft);
+y=ifft(h_fft.*x_fft);
+
+end
+%question 3.8 Test effet reverb FFT
+
+% Chargement du signal de guitare et de la réponse impulsionnelle 
+%signal x et fréquence fe
+audio="nylon-guitar.wav";
+[x,fe]=audioread(audio);
+%soundsc(X,fe);
+%reponse impulsionnelle 
+y=simule_piece(x,fe);
+[R_xy, lags] = xcorr(y, x);
+
+% Identifier l’indice correspondant à lag = 0
+zero_idx = find(lags == 0);
+% Extraire la partie causale (lags >= 0)
+h_k = R_xy(zero_idx:end);
+
+
+% Mesure du temps d'exécution
+tic;
+y = effet_reverb_FFT(x, h_k);  % appel à ta fonction
+temps_execution = toc;
+
+% Affichage du temps
+fprintf('Temps execution de effet_reverb : %.4f secondes\n', temps_execution);
+% Écoute du résultat
+soundsc(y, fe);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
